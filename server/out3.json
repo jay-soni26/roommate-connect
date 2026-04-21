@@ -1,0 +1,17 @@
+[
+  {
+    "url": "postgresql://postgres:***@aws-1-ap-south-1.pooler.supabase.com:6543/postgres?sslmode=no-verify",
+    "success": false,
+    "error": "Tenant or user not found"
+  },
+  {
+    "url": "postgresql://postgres:***@aws-1-ap-south-1.pooler.supabase.com:5432/postgres?sslmode=no-verify",
+    "success": false,
+    "error": "Tenant or user not found"
+  },
+  {
+    "url": "postgresql://postgres.lvceslvrecthiedzvoyy:***@aws-1-ap-south-1.pooler.supabase.com:6543/postgres?sslmode=no-verify",
+    "success": false,
+    "error": "Tenant or user not found"
+  }
+]

@@ -1,0 +1,18 @@
+﻿{
+  users: {
+    _min: { createdAt: 2026-01-22T16:43:47.860Z },
+    _max: { createdAt: 2026-01-22T16:49:53.838Z }
+  },
+  rooms: {
+    _min: { createdAt: 2026-01-24T08:44:22.962Z },
+    _max: { createdAt: 2026-01-24T08:44:22.975Z }
+  },
+  chats: {
+    _min: { createdAt: 2026-01-24T08:44:14.370Z },
+    _max: { createdAt: 2026-01-24T08:44:14.370Z }
+  },
+  messages: {
+    _min: { createdAt: 2026-01-24T08:44:17.934Z },
+    _max: { createdAt: 2026-01-24T08:44:17.934Z }
+  }
+}

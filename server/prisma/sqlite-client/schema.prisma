@@ -1,0 +1,191 @@
+generator client {
+  provider = "prisma-client-js"
+  output   = "./sqlite-client"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = "file:./dev.db"
+}
+
+model User {
+  id                      Int                @id @default(autoincrement())
+  email                   String             @unique
+  password                String
+  name                    String
+  phoneNumber             String?
+  role                    String             @default("USER")
+  designation             String?
+  profile                 Profile?
+  rooms                   Room[]
+  sentMessages            Message[]
+  chats                   Chat[]             @relation("ChatParticipants")
+  isOnline                Boolean            @default(false)
+  lastSeen                DateTime           @default(now())
+  createdAt               DateTime           @default(now())
+  updatedAt               DateTime           @updatedAt
+  notifications           Notification[]
+  hasReceivedProfileNotif Boolean            @default(false)
+  isBanned                Boolean            @default(false)
+  banReason               String?
+  reportsMade             Report[]           @relation("ReportedBy")
+  reportsReceived         Report[]           @relation("ReportedUser")
+  pushSubscriptions       PushSubscription[]
+  favorites               Favorite[]
+
+  @@index([isOnline])
+  @@index([role])
+}
+
+model BannedEmail {
+  id        Int      @id @default(autoincrement())
+  email     String   @unique
+  reason    String?
+  createdAt DateTime @default(now())
+}
+
+model Profile {
+  id                 Int     @id @default(autoincrement())
+  userId             Int     @unique
+  user               User    @relation(fields: [userId], references: [id])
+  avatar             String?
+  budgetMin          Int?
+  budgetMax          Int?
+  location           String?
+  occupation         String?
+  gender             String?
+  lifestyle          String?
+  bio                String?
+  address            String?
+  preferredRoomType  String?
+  state              String?
+  city               String?
+  showAvatarPublicly Boolean @default(true)
+
+  @@index([city, state])
+}
+
+model Room {
+  id               Int        @id @default(autoincrement())
+  ownerId          Int
+  owner            User       @relation(fields: [ownerId], references: [id])
+  postingType      String     @default("OFFERING")
+  title            String
+  description      String
+  location         String
+  address          String?
+  state            String?
+  city             String?
+  rentPerPerson    Int
+  capacity         Int
+  currentOccupancy Int        @default(0)
+  propertyType     String?
+  furnishing       String?
+  amenities        String?
+  genderPreference String?
+  lookingFor       String?
+  images           String?
+  createdAt        DateTime   @default(now())
+  updatedAt        DateTime   @updatedAt
+  favoritedBy      Favorite[]
+
+  @@index([city, state, postingType])
+  @@index([rentPerPerson])
+  @@index([createdAt])
+}
+
+model Chat {
+  id           Int       @id @default(autoincrement())
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
+  participants User[]    @relation("ChatParticipants")
+  messages     Message[]
+  reports      Report[]
+}
+
+model Message {
+  id                 Int      @id @default(autoincrement())
+  chatId             Int
+  chat               Chat     @relation(fields: [chatId], references: [id])
+  senderId           Int
+  sender             User     @relation(fields: [senderId], references: [id])
+  content            String
+  imageUrl           String?
+  isViewOnce         Boolean  @default(false)
+  isViewed           Boolean  @default(false)
+  isDeleted          Boolean  @default(false)
+  deletedBySender    Boolean  @default(false)
+  deletedByRecipient Boolean  @default(false)
+  isRead             Boolean  @default(false)
+  isDelivered        Boolean  @default(false)
+  createdAt          DateTime @default(now())
+}
+
+model Notification {
+  id        Int      @id @default(autoincrement())
+  userId    Int
+  user      User     @relation(fields: [userId], references: [id])
+  type      String
+  title     String
+  message   String
+  data      String?
+  isRead    Boolean  @default(false)
+  createdAt DateTime @default(now())
+}
+
+model Report {
+  id             Int      @id @default(autoincrement())
+  reportId       String   @unique
+  reporterId     Int
+  reporter       User     @relation("ReportedBy", fields: [reporterId], references: [id])
+  reportedUserId Int
+  reportedUser   User     @relation("ReportedUser", fields: [reportedUserId], references: [id])
+  chatId         Int?
+  chat           Chat?    @relation(fields: [chatId], references: [id])
+  reason         String
+  evidence       String?
+  status         String   @default("PENDING")
+  adminAction    String?
+  adminNote      String?
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  @@index([status])
+}
+
+model AdminLog {
+  id        Int      @id @default(autoincrement())
+  adminId   Int
+  adminName String
+  action    String
+  details   String
+  targetId  String?
+  createdAt DateTime @default(now())
+
+  @@index([adminId])
+  @@index([createdAt])
+}
+
+model PushSubscription {
+  id        Int      @id @default(autoincrement())
+  userId    Int
+  user      User     @relation(fields: [userId], references: [id])
+  endpoint  String   @unique
+  p256dh    String
+  auth      String
+  createdAt DateTime @default(now())
+
+  @@index([userId])
+}
+
+model Favorite {
+  id        Int      @id @default(autoincrement())
+  userId    Int
+  user      User     @relation(fields: [userId], references: [id])
+  roomId    Int
+  room      Room     @relation(fields: [roomId], references: [id], onDelete: Cascade)
+  createdAt DateTime @default(now())
+
+  @@unique([userId, roomId])
+  @@index([userId])
+}

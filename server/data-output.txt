@@ -1,0 +1,74 @@
+﻿Users: [
+  {
+    "id": 1,
+    "email": "ram@gmail.com",
+    "name": "Ram"
+  },
+  {
+    "id": 2,
+    "email": "manoj@gmail.com",
+    "name": "Manoj"
+  },
+  {
+    "id": 3,
+    "email": "jay951054@gmail.com",
+    "name": "Jay"
+  },
+  {
+    "id": 4,
+    "email": "test@gmail.com",
+    "name": "test"
+  }
+]
+Chats: [
+  {
+    "id": 1,
+    "createdAt": "2026-01-24T08:44:14.370Z",
+    "updatedAt": "2026-01-24T08:44:17.945Z",
+    "participants": [
+      {
+        "id": 1,
+        "email": "ram@gmail.com",
+        "password": "$2b$10$Ponl2ZrgBqbji2EXLlotoucoRiu77wB3cB0TyOwJVsdGjVj5Hknx.",
+        "name": "Ram",
+        "phoneNumber": null,
+        "role": "USER",
+        "isOnline": false,
+        "lastSeen": "2026-01-24T06:24:14.579Z",
+        "createdAt": "2026-01-22T16:43:47.860Z",
+        "updatedAt": "2026-01-24T08:47:37.150Z",
+        "hasReceivedProfileNotif": true
+      },
+      {
+        "id": 2,
+        "email": "manoj@gmail.com",
+        "password": "$2b$10$Ponl2ZrgBqbji2EXLlotoucoRiu77wB3cB0TyOwJVsdGjVj5Hknx.",
+        "name": "Manoj",
+        "phoneNumber": null,
+        "role": "USER",
+        "isOnline": true,
+        "lastSeen": "2026-01-24T08:47:42.186Z",
+        "createdAt": "2026-01-22T16:43:47.877Z",
+        "updatedAt": "2026-01-24T08:47:42.189Z",
+        "hasReceivedProfileNotif": true
+      }
+    ],
+    "messages": [
+      {
+        "id": 1,
+        "chatId": 1,
+        "senderId": 2,
+        "content": "hiii",
+        "imageUrl": null,
+        "isViewOnce": false,
+        "isViewed": false,
+        "isDeleted": false,
+        "deletedBySender": false,
+        "deletedByRecipient": false,
+        "isRead": false,
+        "isDelivered": false,
+        "createdAt": "2026-01-24T08:44:17.934Z"
+      }
+    ]
+  }
+]
