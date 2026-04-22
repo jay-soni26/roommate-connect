@@ -1,5 +1,5 @@
 # Use lightweight Node image
-FROM node:18-alpine
+FROM node:22-alpine
 RUN apk add --no-cache openssl
 
 # Set working directory
