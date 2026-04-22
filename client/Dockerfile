@@ -9,7 +9,7 @@ RUN npm ci --omit=dev
 
 COPY . .
 
-RUN npm run build
+RUN npm build
 
 # Step 2: Serve with NGINX
 FROM nginx:alpine
