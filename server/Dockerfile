@@ -8,8 +8,9 @@ WORKDIR /app
 # Copy package files first (for caching)
 COPY package*.json ./
 
+RUN npm config set registry https://registry.npmjs.org/
 # Install dependencies
-RUN npm install
+RUN npm ci --omit=dev
 
 # Copy all source code
 COPY . .
