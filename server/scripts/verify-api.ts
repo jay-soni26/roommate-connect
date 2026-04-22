@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-const API_URL = 'roommate.jay26.online/api';
+const API_URL = 'https://roommate.jay26.online/api';
 
 async function runVerification() {
     try {
