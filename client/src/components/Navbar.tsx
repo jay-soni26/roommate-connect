@@ -6,7 +6,8 @@ import { useNotification } from '../context/NotificationContext';
 import { useLanguage } from '../context/LanguageContext';
 import { useSocket } from '../context/SocketContext';
 import { usePush } from '../context/PushContext';
-import api from '../api/client';
+import api, { API_BASE } from '../api/client';
+import { toast } from 'react-hot-toast';
 
 interface Notification {
     id: number;
@@ -69,6 +70,15 @@ const Navbar: React.FC = () => {
             socket.on('notification', () => {
                 setSysUnreadCount(prev => prev + 1);
                 fetchNotifications();
+                toast('📢 New official update received!', {
+                    icon: '🔔',
+                    style: {
+                        borderRadius: '12px',
+                        background: '#1e293b',
+                        color: '#fff',
+                        fontWeight: '600'
+                    }
+                });
             });
 
             socket.on('notificationsUpdated', () => {
@@ -311,7 +321,7 @@ const Navbar: React.FC = () => {
                                 <Link to="/profile" className="profile-pill">
                                     <div className="avatar-sm">
                                         {user.avatar ? (
-                                            <img src={`http://${window.location.hostname}:3000${user.avatar}`} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover', borderRadius: '50%' }} />
+                                            <img src={`${API_BASE}${user.avatar}`} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover', borderRadius: '50%' }} />
                                         ) : (
                                             (user.name || 'U').charAt(0).toUpperCase()
                                         )}
@@ -362,7 +372,7 @@ const Navbar: React.FC = () => {
                             <Link to="/profile" className="profile-pill">
                                 <div className="avatar-sm">
                                     {user.avatar ? 
-                                        <img src={`http://${window.location.hostname}:3000${user.avatar}`} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover', borderRadius: '50%' }} /> : 
+                                        <img src={`${API_BASE}${user.avatar}`} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover', borderRadius: '50%' }} /> : 
                                         (user.name || 'U').charAt(0).toUpperCase()
                                     }
                                 </div>
@@ -426,8 +436,43 @@ const Navbar: React.FC = () => {
                                     {chatUnreadCount > 0 && <span className="drawer-badge">{chatUnreadCount}</span>}
                                 </Link>
                                 <Link to="/profile" className="drawer-item" onClick={() => setIsMenuOpen(false)}>
-                                    <div className="icon"><img src={user.avatar ? `http://${window.location.hostname}:3000${user.avatar}` : 'https://via.placeholder.com/32'} alt="" style={{width:'100%', height:'100%', objectFit:'cover', borderRadius:'50%'}} /></div> Profile
+                                    <div className="icon">
+                                        <div style={{ width: '100%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                                            {user.avatar ? (
+                                                <img src={`${API_BASE}${user.avatar}`} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover', borderRadius: '50%' }} />
+                                            ) : (
+                                                <Shield size={20} />
+                                            )}
+                                        </div>
+                                    </div> Profile
                                 </Link>
+                                <div className="drawer-item" onClick={() => { setIsNotifOpen(!isNotifOpen); }}>
+                                    <div className="icon"><Bell size={20} /></div> Notifications
+                                    {sysUnreadCount > 0 && <span className="drawer-badge">{sysUnreadCount}</span>}
+                                </div>
+
+                                {isNotifOpen && (
+                                    <div className="mobile-notif-container" style={{ margin: '0 -1rem', padding: '0 1rem', background: '#f8fafc', borderRadius: '16px' }}>
+                                        <div className="notif-header" style={{ background: 'transparent', padding: '1rem 0' }}>
+                                            <span>All Updates</span>
+                                            {notifications.length > 0 && (
+                                                <button onClick={handleDeleteSelected} className="notif-action-text delete">Clear All</button>
+                                            )}
+                                        </div>
+                                        <div className="notif-list" style={{ maxHeight: '300px' }}>
+                                            {notifications.length === 0 ? (
+                                                <div style={{ padding: '2rem', textAlign: 'center', color: 'var(--text-muted)' }}>No new updates</div>
+                                            ) : (
+                                                notifications.map(n => (
+                                                    <div key={n.id} className={`notif-item ${!n.isRead ? 'unread' : ''}`} style={{ borderRadius: '12px', marginBottom: '8px', background: 'white' }} onClick={() => { handleNotificationClick(n); setIsMenuOpen(false); }}>
+                                                        <div className="notif-title">{n.title}</div>
+                                                        <div className="notif-msg">{n.message}</div>
+                                                    </div>
+                                                ))
+                                            )}
+                                        </div>
+                                    </div>
+                                )}
                                 {(user.role === 'ADMIN' || user.role === 'SUPER_ADMIN') && (
                                     <Link to="/admin" className="drawer-item admin-glow" onClick={() => setIsMenuOpen(false)}>
                                         <div className="icon"><Shield size={20} /></div> Admin Panel

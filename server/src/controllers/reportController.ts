@@ -59,7 +59,7 @@ export const createReport = async (req: AuthRequest, res: Response) => {
                 await sendPushNotification(sub, {
                     title: 'Report Received',
                     body: `Report ${reportId} received. Our team is investigating.`,
-                    url: 'http://localhost:5173/'
+                    url: process.env.CLIENT_URL || 'http://localhost:5173/'
                 });
             }
         }
@@ -160,7 +160,7 @@ export const handleReportAction = async (req: AuthRequest, res: Response) => {
             if (!isUserOnline(reportedId)) {
                 const bannedSubs = await prisma.pushSubscription.findMany({ where: { userId: reportedId } });
                 for (const sub of bannedSubs) {
-                    await sendPushNotification(sub, { title: 'Account Restricted', body: 'Your account access has been limited due to policy violations.', url: 'http://localhost:5173/' });
+                    await sendPushNotification(sub, { title: 'Account Restricted', body: 'Your account access has been limited due to policy violations.', url: process.env.CLIENT_URL || 'http://localhost:5173/' });
                 }
             }
 

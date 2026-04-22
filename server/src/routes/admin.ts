@@ -193,7 +193,7 @@ router.post('/broadcast', async (req: AuthRequest, res) => {
                             sendPushNotification(sub, { 
                                 title: `Official Update: ${title}`, 
                                 body: message, 
-                                url: 'http://localhost:5173/' 
+                                url: `${process.env.CLIENT_URL || 'http://localhost:5173'}/` 
                             }).catch(e => console.error("Broadcast push error:", e));
                         }
                     });
@@ -222,7 +222,7 @@ router.post('/broadcast', async (req: AuthRequest, res) => {
                                 sendPushNotification(sub, { 
                                     title: `Official Update: ${title}`, 
                                     body: message, 
-                                    url: 'http://localhost:5173/' 
+                                    url: `${process.env.CLIENT_URL || 'http://localhost:5173'}/` 
                                 }).catch(e => console.error("Group broadcast push error:", e));
                             }
                         });
@@ -250,7 +250,7 @@ router.post('/broadcast', async (req: AuthRequest, res) => {
                             sendPushNotification(sub, { 
                                 title: `📢 Official Announcement: ${title}`, 
                                 body: message, 
-                                url: 'http://localhost:5173/' 
+                                url: `${process.env.CLIENT_URL || 'http://localhost:5173'}/` 
                             }).catch(e => console.error("Global push error:", e));
                         }
                     }
@@ -317,7 +317,7 @@ router.post('/message-user', async (req: AuthRequest, res) => {
                         sendPushNotification(sub, {
                             title: `New Message from ${senderName}`,
                             body: message.length > 50 ? message.substring(0, 47) + '...' : message,
-                            url: `http://localhost:5173/chat`
+                            url: `${process.env.CLIENT_URL || 'http://localhost:5173'}/chat`
                         }).catch(e => console.error("Admin DM push error:", e));
                     }
                 });

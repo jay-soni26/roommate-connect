@@ -172,7 +172,7 @@ io.on('connection', (socket) => {
                         sendPushNotification(sub, {
                             title: `New Message from ${senderName}`,
                             body: message.content.length > 50 ? message.content.substring(0, 47) + '...' : message.content,
-                            url: `http://localhost:5173/chat` 
+                            url: `${process.env.CLIENT_URL || 'http://localhost:5173'}/chat` 
                         }).catch(e => console.error("Push send error:", e));
                     }
                 }).catch(pushErr => {

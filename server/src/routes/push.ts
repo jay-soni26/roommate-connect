@@ -69,7 +69,7 @@ router.post('/test-push', authenticateToken, async (req: any, res) => {
       const result = await sendPushNotification(sub, {
         title: 'RoommateConnect Test Alert 🚀',
         body: 'Your device is now synchronized with Jay Soni\'s platform. Notifications are working perfectly!',
-        url: 'http://localhost:5173/profile'
+        url: `${process.env.CLIENT_URL || 'http://localhost:5173'}/profile`
       });
       
       if (!result.success) {

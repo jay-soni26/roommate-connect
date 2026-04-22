@@ -363,7 +363,19 @@ const AdminDashboard: React.FC = () => {
                     </div>
 
                     {/* Tab Navigation */}
-                    <div className="admin-tabs" style={{ display: 'flex', gap: '1rem', margin: '2rem 0', background: 'rgba(255,255,255,0.5)', padding: '0.5rem', borderRadius: '16px', border: '1px solid var(--glass-border)' }}>
+                    <div className="admin-tabs" style={{ 
+                        display: 'flex', 
+                        gap: '0.8rem', 
+                        margin: '2rem 0', 
+                        background: 'rgba(255,255,255,0.5)', 
+                        padding: '0.5rem', 
+                        borderRadius: '16px', 
+                        border: '1px solid var(--glass-border)',
+                        overflowX: 'auto',
+                        whiteSpace: 'nowrap',
+                        scrollbarWidth: 'none',
+                        msOverflowStyle: 'none'
+                    }}>
                         <button onClick={() => setActiveTab('analytics')} className={`tab-btn ${activeTab === 'analytics' ? 'active' : ''}`}>
                             <BarChart3 size={18} /> Business Analytics
                         </button>
@@ -997,7 +1009,7 @@ const AdminDashboard: React.FC = () => {
                 .stat-info .label { display: block; font-size: 0.8rem; font-weight: 700; color: var(--text-muted); text-transform: uppercase; margin-bottom: 0.2rem; }
                 .stat-info .value { display: block; font-size: 1.8rem; font-weight: 900; color: var(--text-main); }
 
-                .tab-btn { flex: 1; display: flex; align-items: center; justify-content: center; gap: 0.6rem; padding: 0.8rem; border: none; background: transparent; border-radius: 12px; font-weight: 700; color: var(--text-muted); cursor: pointer; transition: all 0.2s; }
+                .tab-btn { flex: 0 0 auto; display: flex; align-items: center; justify-content: center; gap: 0.6rem; padding: 0.8rem 1.2rem; border: none; background: transparent; border-radius: 12px; font-weight: 700; color: var(--text-muted); cursor: pointer; transition: all 0.2s; }
                 .tab-btn:hover { background: rgba(255,255,255,0.8); color: var(--text-main); }
                 .tab-btn.active { background: white; color: var(--primary); box-shadow: 0 4px 12px rgba(0,0,0,0.05); }
 
@@ -1076,6 +1088,19 @@ const AdminDashboard: React.FC = () => {
                 .info-item { display: flex; flex-direction: column; gap: 0.4rem; }
                 .info-label { font-size: 0.7rem; color: #64748b; font-weight: 800; text-transform: uppercase; letter-spacing: 0.5px; }
                 .info-value { font-size: 0.95rem; color: var(--text-main); font-weight: 700; }
+
+                @media (max-width: 768px) {
+                    .admin-stats-grid { grid-template-columns: 1fr 1fr; gap: 1rem; }
+                    .stat-card { padding: 1rem; }
+                    .stat-info .value { font-size: 1.2rem; }
+                    .section-title { font-size: 1.1rem; }
+                    .admin-tabs { gap: 0.5rem; margin: 1rem 0; }
+                    .tab-btn { padding: 0.6rem 1rem; font-size: 0.85rem; }
+                    .search-box { width: 100%; }
+                    .sub-tab-nav { width: 100%; justify-content: center; }
+                    .info-grid { grid-template-columns: 1fr; }
+                    .admin-stats-grid { grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); }
+                }
             `}</style>
 
             {/* User Info Modal */}

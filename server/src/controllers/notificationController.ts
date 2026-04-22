@@ -49,7 +49,7 @@ export const checkProfileCompletion = async (req: AuthRequest, res: Response) =>
                     await sendPushNotification(sub, {
                         title: 'Complete Your Profile',
                         body: 'Please complete your profile and room preferences to get better matches.',
-                        url: 'http://localhost:5173/profile'
+                        url: `${process.env.CLIENT_URL || 'http://localhost:5173'}/profile`
                     });
                 }
             }
