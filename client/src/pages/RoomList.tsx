@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { createPortal } from 'react-dom';
-import api from '../api/client';
+import api, { API_BASE } from '../api/client';
 import { MapPin, Users, IndianRupee, ChevronLeft, ChevronRight, Image as ImageIcon, X, Eye, Search, SlidersHorizontal, ArrowUpDown, Shield } from 'lucide-react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
@@ -295,7 +295,7 @@ const RoomList: React.FC = () => {
     });
 
     const navigate = useNavigate();
-    const API_BASE = `http://${window.location.hostname}:3000`;
+    // const API_BASE removed (using imported)
 
     // Fetch rooms and user preferences
     useEffect(() => {

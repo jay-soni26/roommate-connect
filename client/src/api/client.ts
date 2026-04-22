@@ -1,9 +1,13 @@
 import axios from 'axios';
 
-export const API_BASE = `http://${window.location.hostname}:3000`;
+const isProduction = window.location.hostname !== 'localhost' && window.location.hostname !== '127.0.0.1';
+
+export const API_BASE = isProduction 
+    ? `https://${window.location.hostname}` 
+    : `http://${window.location.hostname}:3000`;
 
 const api = axios.create({
-    baseURL: `${API_BASE}/api`,
+    baseURL: isProduction ? `${API_BASE}/api` : `${API_BASE}/api`,
 });
 
 api.interceptors.request.use((config) => {

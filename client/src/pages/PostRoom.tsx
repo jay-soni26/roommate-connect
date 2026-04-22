@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-import api from '../api/client';
+import api, { API_BASE } from '../api/client';
 import { X, Image as ImageIcon } from 'lucide-react';
 import { getStates, getCitiesByState } from '../data/indianStatesAndCities';
 
@@ -39,7 +39,7 @@ const PostRoom: React.FC = () => {
     const [previews, setPreviews] = useState<string[]>([]);
     const [uploading, setUploading] = useState(false);
 
-    const API_BASE = `http://${window.location.hostname}:3000`;
+    // const API_BASE removed (using imported)
 
     useEffect(() => {
         setAvailableStates(getStates());
