@@ -15,9 +15,15 @@ export const SocketProvider: React.FC<{ children: React.ReactNode }> = ({ childr
     const [isOnline, setIsOnline] = useState(false);
 
     useEffect(() => {
+        const isProduction = window.location.hostname !== 'localhost' && window.location.hostname !== '127.0.0.1';
+        const socketUrl = isProduction 
+            ? `https://${window.location.hostname}` 
+            : `http://${window.location.hostname}:3000`;
+
         // Always connect even for guests, but pass userId if present
-        const newSocket = io(`http://${window.location.hostname}:3000`, {
+        const newSocket = io(socketUrl, {
             query: user ? { userId: user.id } : {},
+            transports: ['websocket', 'polling'], // Support both
         });
 
         newSocket.on('connect', () => {
