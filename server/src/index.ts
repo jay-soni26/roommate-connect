@@ -2,7 +2,7 @@ import express from 'express';
 import cors from 'cors';
 import dotenv from 'dotenv';
 import { createServer } from 'http';
-import { initSocket, addUserSocket, removeUserSocket, isUserOnline, getRecipientSockets } from './socket';
+import { initSocket, addUserSocket, removeUserSocket, getRecipientSockets } from './socket';
 
 dotenv.config();
 
@@ -194,15 +194,9 @@ io.on('connection', (socket) => {
                 data: { isViewed: true }
             });
 
-            // Notify both parties that the message was viewed
-            [senderId, recipientId].forEach(uId => {
-                const sockets = getRecipientSockets(uId);
-                if (sockets.length > 0) {
-                    sockets.forEach(sId => {
-                        io.to(sId).emit('messageViewed', { messageId });
-                    });
-                }
-            });
+            // Notify both parties via rooms
+            io.to(`user_${senderId}`).emit('messageViewed', { messageId });
+            io.to(`user_${recipientId}`).emit('messageViewed', { messageId });
         } catch (error) {
             console.error('View once update failed:', error);
         }
@@ -214,16 +208,9 @@ io.on('connection', (socket) => {
                 where: { id: messageId },
                 data: { isDeleted: true, content: 'This message was deleted', imageUrl: null }
             });
-
-            // Notify both parties
-            [senderId, recipientId].forEach(uId => {
-                const sockets = getRecipientSockets(uId);
-                if (sockets.length > 0) {
-                    sockets.forEach(sId => {
-                        io.to(sId).emit('messageUnsent', { messageId, chatId });
-                    });
-                }
-            });
+            // Notify both parties via rooms
+            io.to(`user_${senderId}`).emit('messageUnsent', { messageId, chatId });
+            io.to(`user_${recipientId}`).emit('messageUnsent', { messageId, chatId });
         } catch (error) {
             console.error('Unsend failed:', error);
         }
@@ -242,50 +229,29 @@ io.on('connection', (socket) => {
                 where: { id: messageId },
                 data: updateData
             });
-
-            // Notify only the user who deleted it (to update their UI)
-            const sockets = getRecipientSockets(userId);
-            if (sockets.length > 0) {
-                sockets.forEach(sId => {
-                    io.to(sId).emit('messageDeletedForMe', { messageId, chatId });
-                });
-            }
+            // Notify via room
+            io.to(`user_${userId}`).emit('messageDeletedForMe', { messageId, chatId });
         } catch (error) {
             console.error('Delete for me failed:', error);
         }
     });
 
     socket.on('typing', ({ chatId, recipientId }) => {
-        const sockets = getRecipientSockets(recipientId);
-        if (sockets.length > 0) {
-            sockets.forEach(sId => io.to(sId).emit('userTyping', { chatId }));
-        }
+        io.to(`user_${recipientId}`).emit('userTyping', { chatId });
     });
 
     socket.on('stopTyping', ({ chatId, recipientId }) => {
-        const sockets = getRecipientSockets(recipientId);
-        if (sockets.length > 0) {
-            sockets.forEach(sId => io.to(sId).emit('userStoppedTyping', { chatId }));
-        }
+        io.to(`user_${recipientId}`).emit('userStoppedTyping', { chatId });
     });
 
     socket.on('markAsRead', async ({ chatId, userId, senderId }) => {
         try {
-            // Update all unread messages in this chat sent by the partner
             await prisma.message.updateMany({
-                where: {
-                    chatId,
-                    senderId,
-                    isRead: false
-                },
+                where: { chatId, senderId, isRead: false },
                 data: { isRead: true, isDelivered: true }
             });
-
-            // Notify the sender that their messages were read
-            const senderSockets = getRecipientSockets(senderId);
-            if (senderSockets.length > 0) {
-                senderSockets.forEach(sId => io.to(sId).emit('messagesRead', { chatId }));
-            }
+            // Notify the sender using room-based broadcast
+            io.to(`user_${senderId}`).emit('messagesRead', { chatId });
         } catch (error) {
             console.error('Mark as read failed:', error);
         }
@@ -297,12 +263,8 @@ io.on('connection', (socket) => {
                 where: { id: messageId },
                 data: { isDelivered: true }
             });
-
-            // Notify the sender that their message was delivered
-            const senderSockets = getRecipientSockets(senderId);
-            if (senderSockets.length > 0) {
-                senderSockets.forEach(sId => io.to(sId).emit('messageDelivered', { messageId, chatId }));
-            }
+            // Notify the sender using room-based broadcast
+            io.to(`user_${senderId}`).emit('messageDelivered', { messageId, chatId });
         } catch (error) {
             console.error('Mark as delivered failed:', error);
         }

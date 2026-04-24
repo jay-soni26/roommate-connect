@@ -132,15 +132,18 @@ const ChatPage: React.FC = () => {
 
         const handleNewMessage = (msg: Message) => {
             const currentActiveChat = activeChatRef.current;
-            // If message is for current open chat
-            if (currentActiveChat && msg.chatId === currentActiveChat.id) {
-                setMessages((prev) => [...prev, msg]);
-                // Smooth scroll for new received message
-                setTimeout(() => scrollToBottom(true), 100);
-                // Mark read immediately if we are active
-                api.post(`/notifications/mark-read/${currentActiveChat.id}`);
 
-                // Real-time read receipt
+            // Case 1: Message is for the currently OPEN chat
+            if (currentActiveChat && msg.chatId === currentActiveChat.id) {
+                setMessages((prev) => {
+                    // Deduplicate – socket can fire more than once
+                    if (prev.some(m => m.id === msg.id)) return prev;
+                    return [...prev, msg];
+                });
+                setTimeout(() => scrollToBottom(true), 100);
+
+                // Mark read immediately
+                api.post(`/notifications/mark-read/${currentActiveChat.id}`);
                 const partner = currentActiveChat.participants.find(p => p.id === msg.senderId);
                 if (partner && socket) {
                     socket.emit('markAsRead', {
@@ -150,23 +153,24 @@ const ChatPage: React.FC = () => {
                     });
                 }
 
-                // Clear typing indicator for this chat when a message arrives
+                // Clear typing indicator
                 setTypingUsers(prev => ({ ...prev, [msg.chatId]: false }));
                 if (typingTimeoutRef.current[msg.chatId]) {
                     clearTimeout(typingTimeoutRef.current[msg.chatId]);
                     delete typingTimeoutRef.current[msg.chatId];
                 }
 
-                // Update chat list last message and BRING TO TOP
+                // Bring chat to top of list
                 setChats(prev => {
                     const chatIndex = prev.findIndex(c => c.id === msg.chatId);
                     if (chatIndex === -1) return prev;
                     const updatedChat = { ...prev[chatIndex], messages: [msg] };
-                    const remaining = prev.filter(c => c.id !== msg.chatId);
-                    return [updatedChat, ...remaining];
+                    return [updatedChat, ...prev.filter(c => c.id !== msg.chatId)];
                 });
+
             } else {
-                // If not active, at least mark as delivered if we received it via socket
+                // Case 2: Message is for a DIFFERENT chat (not currently open)
+                // Mark delivered so sender gets double-tick
                 if (socket) {
                     socket.emit('markAsDelivered', {
                         messageId: msg.id,
@@ -175,34 +179,33 @@ const ChatPage: React.FC = () => {
                     });
                 }
 
-                // Update chat list unread count and BRING TO TOP
+                // Update sidebar unread count and bring to top
                 setChats(prev => {
                     const chatIndex = prev.findIndex(c => c.id === msg.chatId);
-
                     if (chatIndex === -1) {
-                        // Chat not found, fetch all conversations to ensure sync
+                        // Unknown chat – fetch conversations and re-add message
                         fetchConversations(true).then(() => {
-                            // After conversations are fetched, try to find the chat again and add the message
                             setChats(p => {
                                 const newIdx = p.findIndex(c => c.id === msg.chatId);
                                 if (newIdx !== -1) {
-                                    const updated = { ...p[newIdx], messages: [msg], _count: { messages: (p[newIdx]._count?.messages || 0) + 1 } };
-                                    const rem = p.filter(c => c.id !== msg.chatId);
-                                    return [updated, ...rem];
+                                    const updated = {
+                                        ...p[newIdx],
+                                        messages: [msg],
+                                        _count: { messages: (p[newIdx]._count?.messages || 0) + 1 }
+                                    };
+                                    return [updated, ...p.filter(c => c.id !== msg.chatId)];
                                 }
                                 return p;
                             });
                         });
                         return prev;
                     }
-
                     const updatedChat = {
                         ...prev[chatIndex],
                         _count: { messages: (prev[chatIndex]._count?.messages || 0) + 1 },
                         messages: [msg]
                     };
-                    const remaining = prev.filter(c => c.id !== msg.chatId);
-                    return [updatedChat, ...remaining];
+                    return [updatedChat, ...prev.filter(c => c.id !== msg.chatId)];
                 });
                 refreshUnreadCount();
             }
@@ -210,26 +213,22 @@ const ChatPage: React.FC = () => {
 
         const handleMessageSent = (msg: Message) => {
             setMessages((prev) => {
-                // Find index of the optimistic message (same content, sender is me, and matches roughly the time or just isOptimistic)
-                const optimisticIndex = prev.findIndex(m => (m as any).isOptimistic && m.content === msg.content);
-                
+                // Replace optimistic message with real one (deduplicate)
+                const optimisticIndex = prev.findIndex(m => (m as any).isOptimistic && m.content === msg.content && m.chatId === msg.chatId);
                 if (optimisticIndex !== -1) {
                     const updated = [...prev];
                     updated[optimisticIndex] = msg;
                     return updated;
                 }
+                // Also avoid true duplicates if socket fires twice
+                if (prev.some(m => m.id === msg.id)) return prev;
                 return [...prev, msg];
             });
-            // Update chat list last message and BRING TO TOP
             setChats(prev => {
                 const chatIndex = prev.findIndex(c => c.id === msg.chatId);
-                if (chatIndex === -1) {
-                    fetchConversations(true);
-                    return prev;
-                }
+                if (chatIndex === -1) { fetchConversations(true); return prev; }
                 const updatedChat = { ...prev[chatIndex], messages: [msg] };
-                const remaining = prev.filter(c => c.id !== msg.chatId);
-                return [updatedChat, ...remaining];
+                return [updatedChat, ...prev.filter(c => c.id !== msg.chatId)];
             });
         };
 
@@ -371,12 +370,13 @@ const ChatPage: React.FC = () => {
             socket.off('messageViewed', handleMessageViewed);
             socket.off('messageUnsent', handleMessageUnsent);
             socket.off('messageDeletedForMe', handleMessageDeletedForMe);
+            socket.off('chatStarted');
             socket.off('userTyping');
             socket.off('userStoppedTyping');
             socket.off('messagesRead');
             socket.off('messageDelivered');
         };
-    }, [socket, refreshUnreadCount]);
+    }, [socket, user?.id, refreshUnreadCount]);
 
     const handleUnsend = (messageId: number) => {
         if (!socket || !activeChat || !user) return;

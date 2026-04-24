@@ -13,6 +13,8 @@ services:
       - "5432:5432"
     volumes:
       - postgres_data:/var/lib/postgresql/data
+    networks:
+      - app-network
 
   backend:
     build: ./server
@@ -26,6 +28,8 @@ services:
       DATABASE_URL: postgresql://postgres:postgres@db:5432/roommate
     env_file:
       - ./server/.env
+    networks:
+      - app-network
 
   frontend:
     build: ./client
@@ -35,6 +39,12 @@ services:
       - backend
     ports:
       - "5173:80"
+    networks:
+      - app-network
 
 volumes:
   postgres_data:
+
+networks:
+  app-network:
+    driver: bridge
