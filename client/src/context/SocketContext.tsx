@@ -24,6 +24,11 @@ export const SocketProvider: React.FC<{ children: React.ReactNode }> = ({ childr
         const newSocket = io(socketUrl, {
             query: user ? { userId: user.id } : {},
             transports: ['websocket', 'polling'], // Support both
+            reconnection: true,
+            reconnectionAttempts: Infinity,
+            reconnectionDelay: 1000,
+            reconnectionDelayMax: 5000,
+            timeout: 20000,
         });
 
         newSocket.on('connect', () => {

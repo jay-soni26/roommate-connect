@@ -299,13 +299,25 @@ const FindRoommates: React.FC = () => {
         };
     }, [socket, user]);
 
-    const handleMessageSeeker = async (ownerId: number) => {
+    const handleContact = async (ownerId: number) => {
+        if (!user) {
+            toast.error('Please login to contact this person');
+            navigate('/login');
+            return;
+        }
+
+        if (user.id === ownerId) {
+            toast.error('You cannot message yourself');
+            return;
+        }
+
         try {
             const { data } = await api.post('/chats/start', { partnerId: ownerId });
             navigate('/chat', { state: { activeChatId: data.id } });
-        } catch (error) {
+        } catch (error: any) {
             console.error('Failed to start chat', error);
-            toast.error('Could not start chat. Please login first.');
+            const errMsg = error.response?.data?.error || 'Could not start chat. Please try again later.';
+            toast.error(errMsg);
         }
     };
 

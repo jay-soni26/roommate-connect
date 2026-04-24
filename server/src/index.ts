@@ -110,8 +110,9 @@ io.on('connection', (socket) => {
             }).catch(e => console.error("Presence update error:", e));
         }
 
-        // Join personal notification channel
+        // Join personal notification and messaging channel
         socket.join(`user_${userId}`);
+        console.log(`User ${userId} connected and joined room user_${userId}`);
     }
 
     socket.on('sendMessage', async ({ chatId, senderId, content, recipientId, imageUrl, isViewOnce }) => {
@@ -159,11 +160,10 @@ io.on('connection', (socket) => {
                 data: { updatedAt: new Date() },
             });
 
-            if (isOnline) {
-                recipientSockets.forEach(sId => {
-                    io.to(sId).emit('newMessage', message);
-                });
-            } else {
+            // Broadcast to recipient's personal room (all their tabs)
+            io.to(`user_${recipientId}`).emit('newMessage', message);
+            
+            if (!isOnline) {
                 // RECIPIENT IS OFFLINE: Send Push Notification (Background)
                 prisma.pushSubscription.findMany({
                     where: { userId: recipientId }
@@ -180,13 +180,8 @@ io.on('connection', (socket) => {
                 });
             }
 
-            // Emit back to sender (all tabs)
-            const senderSockets = getRecipientSockets(senderId);
-            if (senderSockets.length > 0) {
-                senderSockets.forEach(sId => {
-                    io.to(sId).emit('messageSent', message);
-                });
-            }
+            // Emit back to sender's personal room (all their tabs)
+            io.to(`user_${senderId}`).emit('messageSent', message);
         } catch (error) {
             console.error('Message failed:', error);
         }

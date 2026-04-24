@@ -434,12 +434,24 @@ const RoomList: React.FC = () => {
     }, [socket, user]);
 
     const handleMessageOwner = async (ownerId: number) => {
+        if (!user) {
+            toast.error('Please login to message the owner');
+            navigate('/login');
+            return;
+        }
+
+        if (user.id === ownerId) {
+            toast.error('You cannot message yourself');
+            return;
+        }
+
         try {
             const { data } = await api.post('/chats/start', { partnerId: ownerId });
             navigate('/chat', { state: { activeChatId: data.id } });
-        } catch (error) {
+        } catch (error: any) {
             console.error('Failed to start chat', error);
-            alert('Could not start chat. Please login first.');
+            const errMsg = error.response?.data?.error || 'Could not start chat. Please try again later.';
+            toast.error(errMsg);
         }
     };
 

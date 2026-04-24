@@ -1,6 +1,7 @@
 import { Response } from 'express';
 import { prisma } from '../utils';
 import { AuthRequest } from '../middleware/auth';
+import { getIO } from '../socket';
 
 export const getConversations = async (req: AuthRequest, res: Response) => {
     try {
@@ -118,7 +119,29 @@ export const startChat = async (req: AuthRequest, res: Response) => {
                     connect: [{ id: userId }, { id: partnerIdNum }],
                 },
             },
+            include: {
+                participants: {
+                    select: {
+                        id: true,
+                        name: true,
+                        role: true,
+                        isOnline: true,
+                        lastSeen: true,
+                        profile: {
+                            select: {
+                                avatar: true,
+                                showAvatarPublicly: true
+                            }
+                        }
+                    }
+                },
+                messages: true
+            }
         });
+
+        // Notify partner that a new chat has started
+        const io = getIO();
+        io.to(`user_${partnerIdNum}`).emit('chatStarted', chat);
 
         res.status(201).json(chat);
     } catch (error) {

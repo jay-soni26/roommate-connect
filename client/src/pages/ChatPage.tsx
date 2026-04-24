@@ -180,8 +180,19 @@ const ChatPage: React.FC = () => {
                     const chatIndex = prev.findIndex(c => c.id === msg.chatId);
 
                     if (chatIndex === -1) {
-                        // Chat not found, fetch all conversations silently to ensure sync
-                        fetchConversations(true);
+                        // Chat not found, fetch all conversations to ensure sync
+                        fetchConversations(true).then(() => {
+                            // After conversations are fetched, try to find the chat again and add the message
+                            setChats(p => {
+                                const newIdx = p.findIndex(c => c.id === msg.chatId);
+                                if (newIdx !== -1) {
+                                    const updated = { ...p[newIdx], messages: [msg], _count: { messages: (p[newIdx]._count?.messages || 0) + 1 } };
+                                    const rem = p.filter(c => c.id !== msg.chatId);
+                                    return [updated, ...rem];
+                                }
+                                return p;
+                            });
+                        });
                         return prev;
                     }
 
@@ -304,6 +315,14 @@ const ChatPage: React.FC = () => {
         socket.on('messageViewed', handleMessageViewed);
         socket.on('messageUnsent', handleMessageUnsent);
         socket.on('messageDeletedForMe', handleMessageDeletedForMe);
+        
+        socket.on('chatStarted', (newChat: Chat) => {
+            setChats(prev => {
+                if (prev.some(c => c.id === newChat.id)) return prev;
+                return [newChat, ...prev];
+            });
+            toast.success(`New chat started with ${newChat.participants.find(p => p.id !== user?.id)?.name || 'someone'}`);
+        });
 
         socket.on('userTyping', ({ chatId }: { chatId: number }) => {
             setTypingUsers(prev => ({ ...prev, [chatId]: true }));
