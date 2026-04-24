@@ -884,7 +884,7 @@ const ChatPage: React.FC = () => {
                                                                                 <div
                                                                                     className="view-once-placeholder"
                                                                                     onClick={() => {
-                                                                                        setZoomedImage(msg.imageUrl.startsWith('http') ? msg.imageUrl : `${API_BASE}${msg.imageUrl}`);
+                                                                                        setZoomedImage(msg.imageUrl!.startsWith('http') ? msg.imageUrl! : `${API_BASE}${msg.imageUrl}`);
                                                                                         if (!isMe && socket && activeChat) {
                                                                                             socket.emit('markViewOnceOpened', {
                                                                                                 messageId: msg.id,
@@ -903,7 +903,7 @@ const ChatPage: React.FC = () => {
                                                                                 <div
                                                                                     className="message-image-container"
                                                                                     style={{ marginBottom: msg.content ? '0.5rem' : '0', cursor: 'zoom-in' }}
-                                                                                    onClick={() => setZoomedImage(msg.imageUrl.startsWith('http') ? msg.imageUrl : `${API_BASE}${msg.imageUrl}`)}
+                                                                                    onClick={() => setZoomedImage(msg.imageUrl!.startsWith('http') ? msg.imageUrl! : `${API_BASE}${msg.imageUrl}`)}
                                                                                 >
                                                                                     <img
                                                                                         src={msg.imageUrl.startsWith('http') ? msg.imageUrl : `${API_BASE}${msg.imageUrl}`}
@@ -925,7 +925,7 @@ const ChatPage: React.FC = () => {
                                                                                     </a>
                                                                                     {msg.imageUrl.toLowerCase().endsWith('.pdf') && (
                                                                                         <button
-                                                                                            onClick={(e) => { e.preventDefault(); setZoomedImage(msg.imageUrl.startsWith('http') ? msg.imageUrl : `${API_BASE}${msg.imageUrl}`); }}
+                                                                                            onClick={(e) => { e.preventDefault(); setZoomedImage(msg.imageUrl!.startsWith('http') ? msg.imageUrl! : `${API_BASE}${msg.imageUrl}`); }}
                                                                                             style={{
                                                                                                 marginTop: '0.5rem',
                                                                                                 padding: '0.4rem 0.8rem',
