@@ -407,9 +407,9 @@ const ProfilePage: React.FC = () => {
     return (
         <>
             <div style={{ maxWidth: '1200px', margin: '2rem auto', padding: '0 1rem' }} className="animate-fade-in">
-                <div className="profile-grid">
+                <div className="profile-container-inner" style={{ display: 'grid', gridTemplateColumns: '300px 1fr', gap: '2rem', alignItems: 'start' }}>
                     {/* Sidebar */}
-                    <div className="glass-panel profile-sidebar" style={{ padding: '1.5rem', height: 'fit-content' }}>
+                    <div className="glass-panel profile-sidebar" style={{ padding: '1.5rem', height: 'fit-content', position: 'sticky', top: '2rem' }}>
                         <div style={{ textAlign: 'center', marginBottom: '2rem' }}>
                             <div style={{ position: 'relative', width: '100px', height: '100px', margin: '0 auto 1.5rem' }}>
                                 <div style={{
@@ -1105,19 +1105,63 @@ const ProfilePage: React.FC = () => {
                     }
                 }
                 
-                /* Restored Desktop Styles */
-                .input-grid {
-                    display: grid;
-                    grid-template-columns: 1fr 1fr;
-                    gap: 1.2rem;
+                /* Enhanced Responsive Styles */
+                @media (max-width: 900px) {
+                    .profile-container-inner {
+                        grid-template-columns: 1fr !important;
+                        gap: 1.5rem !important;
+                    }
+                    .profile-sidebar {
+                        position: static !important;
+                    }
                 }
 
                 @media (max-width: 600px) {
-                    .input-grid { grid-template-columns: 1fr; }
-                    .profile-sidebar h3, .profile-sidebar span { display: none; }
-                    .profile-sidebar { padding: 0.5rem !important; }
-                    .profile-sidebar div[style*="width: 80px"] { width: 40px !important; height: 40px !important; margin: 0 !important; }
-                    .profile-sidebar div[style*="text-align: center"] { display: flex; align-items: center; gap: 1rem; margin-bottom: 0 !important; }
+                    .input-grid { 
+                        grid-template-columns: 1fr !important; 
+                        gap: 1rem !important;
+                    }
+                    .profile-sidebar {
+                        padding: 1rem !important;
+                        border-radius: 20px !important;
+                    }
+                    .sidebar-nav {
+                        display: flex !important;
+                        overflow-x: auto !important;
+                        gap: 0.5rem !important;
+                        padding-bottom: 0.5rem !important;
+                        scrollbar-width: none !important;
+                    }
+                    .sidebar-nav::-webkit-scrollbar { display: none !important; }
+                    .sidebar-nav > div {
+                        flex: 0 0 auto !important;
+                        margin-bottom: 0 !important;
+                        padding: 0.6rem 1rem !important;
+                        font-size: 0.85rem !important;
+                    }
+                    .profile-sidebar div[style*="text-align: center"] {
+                        display: flex !important;
+                        align-items: center !important;
+                        gap: 1rem !important;
+                        margin-bottom: 1.5rem !important;
+                        text-align: left !important;
+                    }
+                    .profile-sidebar div[style*="width: 100px"], .profile-sidebar div[style*="width: 80px"] {
+                        width: 60px !important;
+                        height: 60px !important;
+                        margin: 0 !important;
+                    }
+                    .profile-sidebar h3 {
+                        font-size: 1.1rem !important;
+                        margin: 0 !important;
+                    }
+                    .profile-sidebar span {
+                        font-size: 0.7rem !important;
+                    }
+                    .camera-btn {
+                        width: 28px !important;
+                        height: 28px !important;
+                    }
                 }
             `}</style>
 
