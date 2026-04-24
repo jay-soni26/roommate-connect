@@ -136,6 +136,7 @@ const Navbar: React.FC = () => {
 
             // Special logic for PROFILE_COMPLETION
             if (notif.type === 'PROFILE_COMPLETION') {
+                setIsMenuOpen(false); // Close menu
                 navigate('/profile');
                 return;
             }
@@ -452,27 +453,57 @@ const Navbar: React.FC = () => {
                                 </div>
 
                                 {isNotifOpen && (
-                                    <div className="mobile-notif-container" style={{ margin: '0 -1rem', padding: '0 1rem', background: '#f8fafc', borderRadius: '16px' }}>
-                                        <div className="notif-header" style={{ background: 'transparent', padding: '1rem 0' }}>
-                                            <span>All Updates</span>
-                                            {notifications.length > 0 && (
-                                                <button onClick={handleDeleteSelected} className="notif-action-text delete">Clear All</button>
-                                            )}
+                                    <div className="mobile-notif-container" style={{ margin: '0.5rem -1rem', padding: '1rem', background: 'rgba(79, 70, 229, 0.03)', borderRadius: '24px', border: '1px solid rgba(79, 70, 229, 0.1)' }}>
+                                        <div className="notif-header" style={{ background: 'transparent', padding: '0 0 1rem 0', border: 'none' }}>
+                                            <span style={{ fontSize: '1.1rem', color: 'var(--primary)', fontWeight: '800' }}>Updates</span>
+                                            <div style={{ display: 'flex', gap: '12px' }}>
+                                                {notifications.length > 0 && (
+                                                    <button onClick={(e) => { 
+                                                        e.stopPropagation();
+                                                        if (notifications.length > 0) {
+                                                            setSelectedNotifs(notifications.map(n => n.id));
+                                                            // We'll call the delete function after setting state
+                                                            setTimeout(() => {
+                                                                const btn = document.getElementById('mobile-delete-btn');
+                                                                if (btn) btn.click();
+                                                            }, 0);
+                                                        }
+                                                    }} className="notif-action-text delete">Clear All</button>
+                                                )}
+                                            </div>
                                         </div>
-                                        <div className="notif-list" style={{ maxHeight: '300px' }}>
+                                        <div className="notif-list" style={{ maxHeight: '400px', overflowY: 'auto', display: 'flex', flexDirection: 'column', gap: '10px' }}>
                                             {notifications.length === 0 ? (
-                                                <div style={{ padding: '2rem', textAlign: 'center', color: 'var(--text-muted)' }}>No new updates</div>
+                                                <div style={{ padding: '2rem', textAlign: 'center', color: 'var(--text-muted)', background: 'white', borderRadius: '16px' }}>No new updates</div>
                                             ) : (
                                                 notifications.map(n => (
-                                                    <div key={n.id} className={`notif-item ${!n.isRead ? 'unread' : ''}`} style={{ borderRadius: '12px', marginBottom: '8px', background: 'white' }} onClick={() => { handleNotificationClick(n); setIsMenuOpen(false); }}>
-                                                        <div className="notif-title">{n.title}</div>
-                                                        <div className="notif-msg">{n.message}</div>
+                                                    <div key={n.id} className={`notif-item ${!n.isRead ? 'unread' : ''}`} style={{ borderRadius: '16px', padding: '1.2rem', background: 'white', border: '1px solid #f1f5f9', boxShadow: '0 4px 12px rgba(0,0,0,0.03)', display: 'flex', flexDirection: 'column', gap: '4px' }} onClick={() => { handleNotificationClick(n); setIsMenuOpen(false); }}>
+                                                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
+                                                            <div className="notif-title" style={{ margin: 0, fontSize: '1rem' }}>{n.title} {!n.isRead && <span className="dot"></span>}</div>
+                                                            <button 
+                                                                onClick={(e) => {
+                                                                    e.stopPropagation();
+                                                                    setSelectedNotifs([n.id]);
+                                                                    setTimeout(() => {
+                                                                        const btn = document.getElementById('mobile-delete-btn');
+                                                                        if (btn) btn.click();
+                                                                    }, 0);
+                                                                }}
+                                                                style={{ background: 'none', border: 'none', padding: '4px', color: '#ef4444' }}
+                                                            >
+                                                                <X size={16} />
+                                                            </button>
+                                                        </div>
+                                                        <div className="notif-msg" style={{ fontSize: '0.9rem', opacity: 0.8 }}>{n.message}</div>
+                                                        <div className="notif-time" style={{ fontSize: '0.75rem', opacity: 0.5, marginTop: '4px' }}>{new Date(n.createdAt).toLocaleString([], { dateStyle: 'short', timeStyle: 'short' })}</div>
                                                     </div>
                                                 ))
                                             )}
                                         </div>
+                                        {/* Hidden delete button to leverage existing logic */}
+                                        <button id="mobile-delete-btn" style={{ display: 'none' }} onClick={handleDeleteSelected}></button>
                                     </div>
-                                )}
+                                )}    )}
                                 {(user.role === 'ADMIN' || user.role === 'SUPER_ADMIN') && (
                                     <Link to="/admin" className="drawer-item admin-glow" onClick={() => setIsMenuOpen(false)}>
                                         <div className="icon"><Shield size={20} /></div> Admin Panel
@@ -497,7 +528,7 @@ const Navbar: React.FC = () => {
                     )}
                     
                     {user && (
-                        <button onClick={handleLogout} className="drawer-logout">
+                        <button onClick={handleLogout} className="drawer-logout" style={{ background: '#ef4444', color: 'white', border: 'none', boxShadow: '0 8px 20px rgba(239, 68, 68, 0.3)', marginTop: '1rem' }}>
                             <LogOut size={20} /> Sign Out
                         </button>
                     )}
