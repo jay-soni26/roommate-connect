@@ -503,7 +503,7 @@ const Navbar: React.FC = () => {
                                         {/* Hidden delete button to leverage existing logic */}
                                         <button id="mobile-delete-btn" style={{ display: 'none' }} onClick={handleDeleteSelected}></button>
                                     </div>
-                                )}    )}
+                                )}
                                 {(user.role === 'ADMIN' || user.role === 'SUPER_ADMIN') && (
                                     <Link to="/admin" className="drawer-item admin-glow" onClick={() => setIsMenuOpen(false)}>
                                         <div className="icon"><Shield size={20} /></div> Admin Panel
