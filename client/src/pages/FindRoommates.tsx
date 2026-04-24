@@ -509,7 +509,7 @@ const FindRoommates: React.FC = () => {
                                     seeker={seeker}
                                     API_BASE={API_BASE}
                                     isAdmin={user?.role === 'SUPER_ADMIN' || user?.role === 'ADMIN'}
-                                    onContact={handleMessageSeeker}
+                                    onContact={handleContact}
                                     onZoom={setZoomedImage}
                                     onViewDetails={setSelectedSeeker}
                                     onAdminDelete={handleAdminDelete}
@@ -574,7 +574,7 @@ const FindRoommates: React.FC = () => {
                                             </div>
                                         </div>
                                         <button
-                                            onClick={() => { handleMessageSeeker(selectedSeeker.ownerId); setSelectedSeeker(null); }}
+                                            onClick={() => { handleContact(selectedSeeker.ownerId); setSelectedSeeker(null); }}
                                             className="btn-primary"
                                             style={{ padding: '0.8rem 1.5rem', borderRadius: '14px', fontWeight: 800, fontSize: '1rem', boxShadow: '0 10px 20px rgba(79, 70, 229, 0.2)', flexShrink: 0 }}
                                         >
@@ -586,7 +586,7 @@ const FindRoommates: React.FC = () => {
                                 {/* Mobile Bottom Bar (Fixed) */}
                                 <div className="details-mobile-footer">
                                     <button
-                                        onClick={() => { handleMessageSeeker(selectedSeeker.ownerId); setSelectedSeeker(null); }}
+                                        onClick={() => { handleContact(selectedSeeker.ownerId); setSelectedSeeker(null); }}
                                         className="btn-primary"
                                         style={{ width: '100%', padding: '1.2rem', borderRadius: '16px', fontWeight: 800, fontSize: '1.1rem' }}
                                     >
