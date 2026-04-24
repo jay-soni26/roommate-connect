@@ -41,6 +41,7 @@ import { prisma } from './utils';
 
 import reportRoutes from './routes/reports';
 import pushRoutes from './routes/push';
+import { getPresignedUrl } from './utils/s3';
 import { sendPushNotification } from './utils/push';
 
 app.use('/api/auth', authRoutes);
@@ -160,9 +161,15 @@ io.on('connection', (socket) => {
                 data: { updatedAt: new Date() },
             });
 
+            // Sign imageUrl for real-time delivery
+            const signedMessage = {
+                ...message,
+                imageUrl: await getPresignedUrl(message.imageUrl)
+            };
+
             // Broadcast to recipient's personal room (all their tabs)
-            io.to(`user_${recipientId}`).emit('newMessage', message);
-            
+            io.to(`user_${recipientId}`).emit('newMessage', signedMessage);
+
             if (!isOnline) {
                 // RECIPIENT IS OFFLINE: Send Push Notification (Background)
                 prisma.pushSubscription.findMany({
@@ -181,7 +188,7 @@ io.on('connection', (socket) => {
             }
 
             // Emit back to sender's personal room (all their tabs)
-            io.to(`user_${senderId}`).emit('messageSent', message);
+            io.to(`user_${senderId}`).emit('messageSent', signedMessage);
         } catch (error) {
             console.error('Message failed:', error);
         }
