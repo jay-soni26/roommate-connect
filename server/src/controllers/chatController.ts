@@ -14,6 +14,9 @@ export const getConversations = async (req: AuthRequest, res: Response) => {
                         id: userId,
                     },
                 },
+                messages: {
+                    some: {} // Only fetch chats that have at least one message
+                }
             },
             include: {
                 participants: {
@@ -138,10 +141,6 @@ export const startChat = async (req: AuthRequest, res: Response) => {
                 messages: true
             }
         });
-
-        // Notify partner that a new chat has started
-        const io = getIO();
-        io.to(`user_${partnerIdNum}`).emit('chatStarted', chat);
 
         res.status(201).json(chat);
     } catch (error) {
