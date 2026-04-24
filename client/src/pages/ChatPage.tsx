@@ -101,7 +101,7 @@ const ChatPage: React.FC = () => {
                 } else {
                     // Chat ID provided but not in list (likely empty chat)
                     try {
-                        const { data: chatDetails } = await api.get(`/chats/${location.state.activeChatId}`);
+                        const { data: chatDetails } = await api.get(`/chats/${location.state.activeChatId}/details`);
                         if (chatDetails) {
                             setChats(prev => [chatDetails, ...prev]);
                             setActiveChat(chatDetails);
@@ -119,9 +119,12 @@ const ChatPage: React.FC = () => {
                     const newChatRes = await api.post('/chats/start', { partnerId: location.state.partnerId });
                     const newChat = newChatRes.data;
                     if (newChat) {
-                        setChats(prev => [newChat, ...prev]);
-                        setActiveChat(newChat);
-                        setShowSidebar(false);
+                        const { data: chatDetails } = await api.get(`/chats/${newChat.id}/details`);
+                        if (chatDetails) {
+                            setChats(prev => [chatDetails, ...prev]);
+                            setActiveChat(chatDetails);
+                            setShowSidebar(false);
+                        }
                     }
                 }
             }
