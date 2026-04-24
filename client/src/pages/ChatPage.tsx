@@ -117,10 +117,9 @@ const ChatPage: React.FC = () => {
                     setActiveChat(targetChat);
                 } else {
                     const newChatRes = await api.post('/chats/start', { partnerId: location.state.partnerId });
-                    const refreshRes = await api.get('/chats');
-                    setChats(refreshRes.data);
-                    const newChat = refreshRes.data.find((c: Chat) => c.id === newChatRes.data.id);
+                    const newChat = newChatRes.data;
                     if (newChat) {
+                        setChats(prev => [newChat, ...prev]);
                         setActiveChat(newChat);
                         setShowSidebar(false);
                     }
