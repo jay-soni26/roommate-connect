@@ -15,9 +15,6 @@ export const getConversations = async (req: AuthRequest, res: Response) => {
                         id: userId,
                     },
                 },
-                messages: {
-                    some: {} // Only fetch chats that have at least one message
-                }
             },
             include: {
                 participants: {

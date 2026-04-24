@@ -98,6 +98,18 @@ const ChatPage: React.FC = () => {
                 if (targetChat) {
                     setActiveChat(targetChat);
                     setShowSidebar(false);
+                } else {
+                    // Chat ID provided but not in list (likely empty chat)
+                    try {
+                        const { data: chatDetails } = await api.get(`/chats/${location.state.activeChatId}`);
+                        if (chatDetails) {
+                            setChats(prev => [chatDetails, ...prev]);
+                            setActiveChat(chatDetails);
+                            setShowSidebar(false);
+                        }
+                    } catch (e) {
+                        console.error('Failed to fetch specific chat details', e);
+                    }
                 }
             } else if (location.state?.partnerId && !background) {
                 const targetChat = data.find((c: Chat) => c.participants.some(p => p.id === location.state.partnerId));
