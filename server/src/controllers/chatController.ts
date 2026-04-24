@@ -2,6 +2,7 @@ import { Response } from 'express';
 import { prisma } from '../utils';
 import { AuthRequest } from '../middleware/auth';
 import { getIO } from '../socket';
+import { getPresignedUrl } from '../utils/s3';
 
 export const getConversations = async (req: AuthRequest, res: Response) => {
     try {
@@ -49,7 +50,29 @@ export const getConversations = async (req: AuthRequest, res: Response) => {
             },
             orderBy: { updatedAt: 'desc' },
         });
-        res.json(chats);
+        // Sign URLs for all participants and last messages
+        const signedChats = await Promise.all(chats.map(async chat => {
+            const signedParticipants = await Promise.all(chat.participants.map(async p => ({
+                ...p,
+                profile: p.profile ? {
+                    ...p.profile,
+                    avatar: await getPresignedUrl(p.profile.avatar)
+                } : null
+            })));
+
+            const signedMessages = await Promise.all(chat.messages.map(async m => ({
+                ...m,
+                imageUrl: await getPresignedUrl(m.imageUrl)
+            })));
+
+            return {
+                ...chat,
+                participants: signedParticipants,
+                messages: signedMessages
+            };
+        }));
+
+        res.json(signedChats);
     } catch (error) {
         console.error('getConversations error:', error);
         res.status(500).json({ error: 'Failed to fetch conversations' });
@@ -71,7 +94,13 @@ export const getMessages = async (req: AuthRequest, res: Response) => {
             include: { sender: { select: { id: true, name: true, role: true } } },
             orderBy: { createdAt: 'asc' },
         });
-        res.json(messages);
+        // Sign image URLs for all messages
+        const signedMessages = await Promise.all(messages.map(async m => ({
+            ...m,
+            imageUrl: await getPresignedUrl(m.imageUrl)
+        })));
+
+        res.json(signedMessages);
     } catch (error) {
         console.error('getMessages error:', error);
         res.status(500).json({ error: 'Failed to fetch messages' });
