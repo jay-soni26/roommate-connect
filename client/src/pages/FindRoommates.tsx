@@ -67,11 +67,11 @@ const SeekerCard: React.FC<{
             {images.length > 0 && (
                 <div
                     style={{ height: '200px', width: '100%', background: '#f3f4f6', position: 'relative', overflow: 'hidden', cursor: 'pointer' }}
-                    onClick={() => onZoom(`${API_BASE}${images[currentIndex]}`)}
+                    onClick={() => onZoom(images[currentIndex].startsWith('http') ? images[currentIndex] : `${API_BASE}${images[currentIndex]}`)}
                 >
                     <img
                         key={currentIndex}
-                        src={`${API_BASE}${images[currentIndex]}`}
+                        src={images[currentIndex].startsWith('http') ? images[currentIndex] : `${API_BASE}${images[currentIndex]}`}
                         alt={`${seeker.title} - ${currentIndex + 1}`}
                         style={{ width: '100%', height: '100%', objectFit: 'cover', animation: 'fadeIn 0.4s ease' }}
                     />

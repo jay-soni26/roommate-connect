@@ -687,12 +687,12 @@ const ChatPage: React.FC = () => {
                                                     onClick={(e) => {
                                                         if (partner?.profile?.avatar && partner.profile.showAvatarPublicly !== false) {
                                                             e.stopPropagation();
-                                                            setZoomedImage(`${API_BASE}${partner.profile.avatar}`);
+                                                            setZoomedImage(partner.profile.avatar.startsWith('http') ? partner.profile.avatar : `${API_BASE}${partner.profile.avatar}`);
                                                         }
                                                     }}
                                                 >
                                                     {partner?.profile?.avatar && partner.profile.showAvatarPublicly !== false ? (
-                                                        <img src={`${API_BASE}${partner.profile.avatar}`} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover', borderRadius: 'inherit' }} />
+                                                        <img src={partner.profile.avatar.startsWith('http') ? partner.profile.avatar : `${API_BASE}${partner.profile.avatar}`} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover', borderRadius: 'inherit' }} />
                                                     ) : (
                                                         (partner?.name || 'U').charAt(0).toUpperCase()
                                                     )}
@@ -752,12 +752,12 @@ const ChatPage: React.FC = () => {
                                             onClick={() => {
                                                 const partner = getPartner(activeChat);
                                                 if (partner?.profile?.avatar && partner.profile.showAvatarPublicly !== false) {
-                                                    setZoomedImage(`${API_BASE}${partner.profile.avatar}`);
+                                                    setZoomedImage(partner.profile.avatar.startsWith('http') ? partner.profile.avatar : `${API_BASE}${partner.profile.avatar}`);
                                                 }
                                             }}
                                         >
                                             {getPartner(activeChat)?.profile?.avatar && getPartner(activeChat)?.profile?.showAvatarPublicly !== false ? (
-                                                <img src={`${API_BASE}${getPartner(activeChat)?.profile?.avatar}`} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover', borderRadius: 'inherit' }} />
+                                                <img src={getPartner(activeChat)?.profile?.avatar?.startsWith('http') ? getPartner(activeChat)?.profile?.avatar : `${API_BASE}${getPartner(activeChat)?.profile?.avatar}`} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover', borderRadius: 'inherit' }} />
                                             ) : (
                                                 (getPartner(activeChat)?.name || 'U').charAt(0).toUpperCase()
                                             )}
@@ -827,14 +827,14 @@ const ChatPage: React.FC = () => {
                                                             className="message-avatar"
                                                             onClick={() => {
                                                                 if (partner?.profile?.avatar && partner.profile.showAvatarPublicly !== false) {
-                                                                    setZoomedImage(`${API_BASE}${partner.profile.avatar}`);
+                                                                    setZoomedImage(partner.profile.avatar.startsWith('http') ? partner.profile.avatar : `${API_BASE}${partner.profile.avatar}`);
                                                                 }
                                                             }}
                                                             style={{ cursor: partner?.profile?.avatar ? 'pointer' : 'default' }}
                                                         >
                                                             {partner?.profile?.avatar && partner.profile.showAvatarPublicly !== false ? (
                                                                 <img
-                                                                    src={`${API_BASE}${partner.profile.avatar}`}
+                                                                    src={partner.profile.avatar.startsWith('http') ? partner.profile.avatar : `${API_BASE}${partner.profile.avatar}`}
                                                                     alt=""
                                                                     style={{ width: '100%', height: '100%', objectFit: 'cover', borderRadius: '50%' }}
                                                                 />
@@ -884,7 +884,7 @@ const ChatPage: React.FC = () => {
                                                                                 <div
                                                                                     className="view-once-placeholder"
                                                                                     onClick={() => {
-                                                                                        setZoomedImage(`${API_BASE}${msg.imageUrl}`);
+                                                                                        setZoomedImage(msg.imageUrl.startsWith('http') ? msg.imageUrl : `${API_BASE}${msg.imageUrl}`);
                                                                                         if (!isMe && socket && activeChat) {
                                                                                             socket.emit('markViewOnceOpened', {
                                                                                                 messageId: msg.id,
@@ -903,10 +903,10 @@ const ChatPage: React.FC = () => {
                                                                                 <div
                                                                                     className="message-image-container"
                                                                                     style={{ marginBottom: msg.content ? '0.5rem' : '0', cursor: 'zoom-in' }}
-                                                                                    onClick={() => setZoomedImage(`${API_BASE}${msg.imageUrl}`)}
+                                                                                    onClick={() => setZoomedImage(msg.imageUrl.startsWith('http') ? msg.imageUrl : `${API_BASE}${msg.imageUrl}`)}
                                                                                 >
                                                                                     <img
-                                                                                        src={`${API_BASE}${msg.imageUrl}`}
+                                                                                        src={msg.imageUrl.startsWith('http') ? msg.imageUrl : `${API_BASE}${msg.imageUrl}`}
                                                                                         alt="Sent"
                                                                                         style={{ maxWidth: '100%', borderRadius: '8px', display: 'block' }}
                                                                                     />
@@ -914,7 +914,7 @@ const ChatPage: React.FC = () => {
                                                                             ) : (
                                                                                 <div className="message-file-container" style={{ marginBottom: msg.content ? '0.5rem' : '0' }}>
                                                                                     <a
-                                                                                        href={`${API_BASE}${msg.imageUrl}`}
+                                                                                        href={msg.imageUrl.startsWith('http') ? msg.imageUrl : `${API_BASE}${msg.imageUrl}`}
                                                                                         target="_blank"
                                                                                         rel="noopener noreferrer"
                                                                                         className="file-attachment"
@@ -925,7 +925,7 @@ const ChatPage: React.FC = () => {
                                                                                     </a>
                                                                                     {msg.imageUrl.toLowerCase().endsWith('.pdf') && (
                                                                                         <button
-                                                                                            onClick={(e) => { e.preventDefault(); setZoomedImage(`${API_BASE}${msg.imageUrl}`); }}
+                                                                                            onClick={(e) => { e.preventDefault(); setZoomedImage(msg.imageUrl.startsWith('http') ? msg.imageUrl : `${API_BASE}${msg.imageUrl}`); }}
                                                                                             style={{
                                                                                                 marginTop: '0.5rem',
                                                                                                 padding: '0.4rem 0.8rem',

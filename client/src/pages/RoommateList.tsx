@@ -120,7 +120,7 @@ const RoommateList: React.FC = () => {
                                     <div className="avatar">
                                         {p.avatar && p.showAvatarPublicly !== false ? (
                                             <img
-                                                src={`${API_BASE}${p.avatar}`}
+                                                src={p.avatar.startsWith('http') ? p.avatar : `${API_BASE}${p.avatar}`}
                                                 alt={p.user.name}
                                                 style={{ width: '100%', height: '100%', objectFit: 'cover', borderRadius: '18px' }}
                                             />

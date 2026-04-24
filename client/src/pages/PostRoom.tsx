@@ -142,7 +142,7 @@ const PostRoom: React.FC = () => {
                         try {
                             const existing = JSON.parse(data.images);
                             if (Array.isArray(existing)) {
-                                setPreviews(existing.map(path => `${API_BASE}${path}`));
+                                setPreviews(existing.map(path => path.startsWith('http') ? path : `${API_BASE}${path}`));
                             }
                         } catch (e) {
                             console.error('Failed to parse existing images', e);

@@ -321,7 +321,7 @@ const Navbar: React.FC = () => {
                                 <Link to="/profile" className="profile-pill">
                                     <div className="avatar-sm">
                                         {user.avatar ? (
-                                            <img src={`${API_BASE}${user.avatar}`} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover', borderRadius: '50%' }} />
+                                            <img src={user.avatar.startsWith('http') ? user.avatar : `${API_BASE}${user.avatar}`} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover', borderRadius: '50%' }} />
                                         ) : (
                                             (user.name || 'U').charAt(0).toUpperCase()
                                         )}
@@ -372,7 +372,7 @@ const Navbar: React.FC = () => {
                             <Link to="/profile" className="profile-pill">
                                 <div className="avatar-sm">
                                     {user.avatar ? 
-                                        <img src={`${API_BASE}${user.avatar}`} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover', borderRadius: '50%' }} /> : 
+                                        <img src={user.avatar.startsWith('http') ? user.avatar : `${API_BASE}${user.avatar}`} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover', borderRadius: '50%' }} /> : 
                                         (user.name || 'U').charAt(0).toUpperCase()
                                     }
                                 </div>
@@ -439,7 +439,7 @@ const Navbar: React.FC = () => {
                                     <div className="icon">
                                         <div style={{ width: '100%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                                             {user.avatar ? (
-                                                <img src={`${API_BASE}${user.avatar}`} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover', borderRadius: '50%' }} />
+                                                <img src={user.avatar.startsWith('http') ? user.avatar : `${API_BASE}${user.avatar}`} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover', borderRadius: '50%' }} />
                                             ) : (
                                                 <Shield size={20} />
                                             )}

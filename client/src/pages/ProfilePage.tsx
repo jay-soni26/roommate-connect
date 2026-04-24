@@ -427,11 +427,11 @@ const ProfilePage: React.FC = () => {
                                     cursor: formData.avatar ? 'zoom-in' : 'default'
                                 }}
                                         onClick={() => {
-                                            if (formData.avatar) setZoomedImage(`${API_BASE}${formData.avatar}`);
+                                            if (formData.avatar) setZoomedImage(formData.avatar.startsWith('http') ? formData.avatar : `${API_BASE}${formData.avatar}`);
                                         }}
                                     >
                                     {formData.avatar ? (
-                                        <img src={`${API_BASE}${formData.avatar}`} alt="Profile" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                                        <img src={formData.avatar.startsWith('http') ? formData.avatar : `${API_BASE}${formData.avatar}`} alt="Profile" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
                                     ) : (
                                         <User size={50} />
                                     )}
