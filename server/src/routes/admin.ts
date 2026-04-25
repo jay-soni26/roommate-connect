@@ -147,6 +147,9 @@ router.delete('/users/:id', async (req: AuthRequest, res) => {
         const targetId = Number(req.params.id);
 
         // Clean up everything associated
+        await prisma.favorite.deleteMany({ where: { userId: targetId } });
+        await prisma.report.deleteMany({ where: { OR: [{ reporterId: targetId }, { reportedUserId: targetId }] } });
+        await prisma.pushSubscription.deleteMany({ where: { userId: targetId } });
         await prisma.message.deleteMany({ where: { OR: [{ senderId: targetId }, { chat: { participants: { some: { id: targetId } } } }] } });
         await prisma.notification.deleteMany({ where: { userId: targetId } });
         await prisma.room.deleteMany({ where: { ownerId: targetId } });

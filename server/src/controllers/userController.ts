@@ -213,12 +213,15 @@ export const deleteAccount = async (req: AuthRequest, res: Response) => {
         const userId = req.user!.id;
 
         // In a real app with many relations, we might want to use a transaction
-        // Delete profile
+        // Clean up everything associated
+        await prisma.favorite.deleteMany({ where: { userId } });
+        await prisma.report.deleteMany({ where: { OR: [{ reporterId: userId }, { reportedUserId: userId }] } });
+        await prisma.pushSubscription.deleteMany({ where: { userId } });
+        await prisma.notification.deleteMany({ where: { userId } });
         await prisma.profile.deleteMany({ where: { userId } });
-        // Delete rooms
         await prisma.room.deleteMany({ where: { ownerId: userId } });
-        // Delete messages
         await prisma.message.deleteMany({ where: { senderId: userId } });
+        
         // Delete user
         // NOTE: We do NOT delete the email from BannedEmail. 
         // This ensures if they were banned, deleting/re-registering still blocks them.
